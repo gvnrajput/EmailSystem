@@ -4,7 +4,7 @@ using System;
 
 namespace EmailSystem.Controllers
 {
-    
+
     public class LoginController : Controller
     {
         public AppDbContext appDbContext;
@@ -19,13 +19,18 @@ namespace EmailSystem.Controllers
         [HttpPost]
         public IActionResult Login(Users obj)
         {
-           List<Users> users = appDbContext.Users.ToList();
-            Users usr = users.Where(x=> x.UserName == obj.UserName && x.password==obj.password).FirstOrDefault();
-            if (usr!=null)
+            List<Users> users = appDbContext.Users.ToList();
+            Users usr = users.Where(x => x.UserName.ToLower() == obj.UserName.ToLower() && x.password == obj.password).FirstOrDefault();
+            if (usr != null)
             {
-                RedirectToAction("Index", "Home");
+                HttpContext.Session.SetString("Username", usr.UserName); // Storing a string
+                HttpContext.Session.SetInt32("UserId", usr.UserId);
+                return RedirectToAction("Index", "Home");
             }
-            return View("Index");
+            else
+            {
+                return View("Index");
+            }
         }
     }
 }
